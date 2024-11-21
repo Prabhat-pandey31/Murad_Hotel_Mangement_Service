@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: hotel-management-api-gateway
+
+  cloud:
+    gateway:
+      
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods: "*"
+            allowed-headers: "*"
+    
+      routes:
+        - id: hotel-management-user-service
+          uri: lb://hotel-management-user-service
+          predicates:
+            - Path=/api/user/**
+
+        - id: hotel-management-booking-service
+          uri: lb://hotel-management-booking-service
+          predicates:
+            - Path=/api/book/**
+        
+        - id: hotel-management-hotel-service
+          uri: lb://hotel-management-hotel-service
+          predicates:
+            - Path=/api/hotel/**
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
